@@ -2,46 +2,47 @@
  * @Author: Noah_hd
  * @Date: 2020-10-21 15:11:15
  * @LastEditors: Noah_hd
- * @LastEditTime: 2020-10-26 11:27:04
+ * @LastEditTime: 2020-10-26 17:46:09
  * @Description: 
+
+ 使用注意：
+ 1、在引用此组件时，包裹此组件的dom需要有高度
+ 2、总共有四个插槽可用，根据分屏方式两两配对，分别是 top footer 组合和left right组合
 -->
 <template>
   <div class="app">
-    <el-button
-      type="text"
-      @click="YaxisVisible = true"
-    >打开上下滑动分屏</el-button>
-
-    <el-dialog
-      title="外层 Dialog"
-      :visible.sync="YaxisVisible"
+    <div
+      class="yaxisBox"
+      v-if="splitType==='yAxis'?true:false"
     >
-      <div class="top">this is top box
-        <div class="controlBtn">
-        </div>
+      <div
+        class="top"
+        :style="{width:firstBoxSize.width,height:firstBoxSize.height}"
+      >this is top box
+        <slot name="top"></slot>
+        <div class="controlBtn"></div>
       </div>
-      <div class="footer">this is footer box</div>
-    </el-dialog>
-    <el-button
-      type="text"
-      @click="XaxisVisible = true"
-    >打开左右滑动分屏</el-button>
-    <el-dialog
-      title="外层 Dialog"
-      :visible.sync="XaxisVisible"
+      <div
+        class="footer"
+        :style="{width:secondBoxSize.width,height:secondBoxSize.height}"
+      >this is footer box
+        <slot name="footer"></slot>
+      </div>
+    </div>
+    <div
+      class="XaxisBox"
+      v-if="splitType==='xAxis'?true:false"
     >
-      <div class="XaxisBox">
-        <div class="leftBox">
-          this is left box
-          <div class="xAxisControl">
-
-          </div>
-        </div>
-        <div class="rightBox">
-          this is right box
-        </div>
+      <div class="leftBox">
+        <slot name="left"></slot>
+        this is left box
+        <div class="xAxisControl"> </div>
       </div>
-    </el-dialog>
+      <div class="rightBox">
+        <slot name="right"></slot>
+        this is right box
+      </div>
+    </div>
   </div>
 </template>
 
@@ -50,32 +51,53 @@ export default {
   name: 'HelloWorld',
   data () {
     return {
-      controlFlag: false,
       topBoxHeight: 0,
       bottomBoxHeight: 0,
-      YaxisVisible: false,
-      XaxisVisible: false,
       leftBoxWidth: 0,
       rightBoxWidth: 0
 
     }
   },
-  watch: {
-    YaxisVisible (nowVal, oldVal) {
-      // console.log(now, old)
-      if (nowVal) {
-        this.btnDrag()
+  props: {
+    /**
+     * @des :判断是上下还是左右分屏 xAxis：左右 yAxis:上下
+     */
+    splitType: {
+      type: String,
+      default () {
+        return "xAxis"
       }
     },
-    XaxisVisible (nowVal, oldVal) {
-      if (nowVal) {
-        this.xAxisDrag()
+    firstBoxSize: {
+      type: Object,
+      default () {
+        return { width: '50%', height: '50%' }
+      }
+    },
+    secondBoxSize: {
+      type: Object,
+      default () {
+        return { width: '50%', height: '50%' }
       }
     }
   },
+  watch: {
+  },
   mounted () {
+    this.checkSplitType()
+    console.log(this.firstBoxSize, this.secondBoxSize, "++++")
   },
   methods: {
+    /**
+     * @des :根据splitType判断是左右还是上下平移
+     */
+    checkSplitType () {
+      if (this.splitType === 'xAxis') {
+        this.xAxisDrag()
+      } else if (this.splitType === 'yAxis') {
+        this.btnDrag()
+      }
+    },
     btnDrag (e) {
       this.$nextTick(() => {
         this.topBoxHeight = document.getElementsByClassName('top')[0].offsetHeight
@@ -103,8 +125,6 @@ export default {
           return false
         }
       })
-
-
     },
     xAxisDrag (e) {
       this.$nextTick(() => {
@@ -143,19 +163,17 @@ export default {
 .app {
   margin: 0;
   padding: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background: #ccc;
 }
 .top {
-  height: 30vh;
   background-color: rgb(108, 149, 108);
   border-bottom: 1px solid #ccc;
   position: relative;
   box-sizing: border-box;
 }
 .footer {
-  height: 40vh;
   background-color: rgb(49, 86, 126);
   /* background-color: rgb(59, 59, 131); */
 }
@@ -178,20 +196,23 @@ export default {
   transform: translate(-50%, -100%);
   cursor: ns-resize;
 }
+.yaxisBox {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
 .XaxisBox {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: row;
 }
 .leftBox {
-  width: 30vw;
   background-color: burlywood;
-  height: 50vh;
   position: relative;
 }
 .rightBox {
-  width: 20vw;
   background-color: rgb(192, 146, 146);
-  height: 50vh;
 }
 .xAxisControl {
   background-color: #ccc;
