@@ -2,27 +2,45 @@
  * @Author: Noah_hd
  * @Date: 2020-10-21 15:11:15
  * @LastEditors: Noah_hd
- * @LastEditTime: 2020-10-22 16:19:36
+ * @LastEditTime: 2020-10-26 11:27:04
  * @Description: 
 -->
 <template>
   <div class="app">
     <el-button
       type="text"
-      @click="outerVisible = true"
-    >点击打开外层 Dialog</el-button>
+      @click="YaxisVisible = true"
+    >打开上下滑动分屏</el-button>
+
     <el-dialog
       title="外层 Dialog"
-      :visible.sync="outerVisible"
+      :visible.sync="YaxisVisible"
     >
       <div class="top">this is top box
-        <div
-          class="controlBtn"
-          draggable="true"
-        >
+        <div class="controlBtn">
         </div>
       </div>
       <div class="footer">this is footer box</div>
+    </el-dialog>
+    <el-button
+      type="text"
+      @click="XaxisVisible = true"
+    >打开左右滑动分屏</el-button>
+    <el-dialog
+      title="外层 Dialog"
+      :visible.sync="XaxisVisible"
+    >
+      <div class="XaxisBox">
+        <div class="leftBox">
+          this is left box
+          <div class="xAxisControl">
+
+          </div>
+        </div>
+        <div class="rightBox">
+          this is right box
+        </div>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -35,14 +53,23 @@ export default {
       controlFlag: false,
       topBoxHeight: 0,
       bottomBoxHeight: 0,
-      outerVisible: false
+      YaxisVisible: false,
+      XaxisVisible: false,
+      leftBoxWidth: 0,
+      rightBoxWidth: 0
+
     }
   },
   watch: {
-    outerVisible (now, old) {
+    YaxisVisible (nowVal, oldVal) {
       // console.log(now, old)
-      if (now) {
+      if (nowVal) {
         this.btnDrag()
+      }
+    },
+    XaxisVisible (nowVal, oldVal) {
+      if (nowVal) {
+        this.xAxisDrag()
       }
     }
   },
@@ -60,16 +87,10 @@ export default {
           document.onmousemove = (e) => {
             var l = e.clientX - disX
             var t = e.clientY - disY
-            controlBtn
-            if (l < 0) { //防止div跑出可视框
-              l = 0;
-            } else if (l > document.documentElement.clientWidth - controlBtn.offsetWidth) {
-              l = document.documentElement.clientWidth - controlBtn.offsetWidth;
-            }
             if (t < 0) {
               t = 0;
-            } else if (t > document.documentElement.clientHeight - controlBtn.offsetHeight) {
-              t = document.documentElement.clientHeight - controlBtn.offsetHeight;
+            } else if (t > this.topBoxHeight + this.bottomBoxHeight) {
+              t = this.topBoxHeight + this.bottomBoxHeight;
             }
             controlBtn.style.top = t + 'px'
             document.getElementsByClassName('top')[0].style.height = t + 'px'
@@ -84,13 +105,40 @@ export default {
       })
 
 
+    },
+    xAxisDrag (e) {
+      this.$nextTick(() => {
+        this.leftBoxWidth = document.getElementsByClassName('leftBox')[0].offsetWidth
+        this.rightBoxWidth = document.getElementsByClassName('rightBox')[0].offsetWidth
+        const xAxisControl = document.getElementsByClassName('xAxisControl')[0]
+        xAxisControl.onmousedown = (e) => {
+          var disX = e.clientX - xAxisControl.offsetLeft //clientX,Y鼠标相对于浏览器窗口可视区域的X，Y坐标（窗口坐标）
+          var disY = e.clientY - xAxisControl.offsetTop
+          document.onmousemove = (e) => {
+            var l = e.clientX - disX
+            var t = e.clientY - disY
+            if (l < 0) {
+              l = 0;
+            } else if (l > this.leftBoxWidth + this.rightBoxWidth) {
+              l = this.leftBoxWidth + this.rightBoxWidth;
+              // console.log(1111111)
+            }
+            xAxisControl.style.left = l + 'px'
+            document.getElementsByClassName('leftBox')[0].style.width = l + 'px'
+            document.getElementsByClassName('rightBox')[0].style.width = this.rightBoxWidth + this.leftBoxWidth - l + 'px'
+          }
+          document.onmouseup = function () {
+            document.onmousemove = null;
+            document.onmouseup = null
+          }
+          return false
+        }
+      })
     }
   }
 
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .app {
   margin: 0;
@@ -128,6 +176,32 @@ export default {
   z-index: 99;
   /* transform: translateX(-50%); */
   transform: translate(-50%, -100%);
-  /* cursor: ns-resize; */
+  cursor: ns-resize;
+}
+.XaxisBox {
+  display: flex;
+  flex-direction: row;
+}
+.leftBox {
+  width: 30vw;
+  background-color: burlywood;
+  height: 50vh;
+  position: relative;
+}
+.rightBox {
+  width: 20vw;
+  background-color: rgb(192, 146, 146);
+  height: 50vh;
+}
+.xAxisControl {
+  background-color: #ccc;
+  width: 30px;
+  height: 20px;
+  position: absolute;
+  z-index: 99;
+  top: 50%;
+  left: 100%;
+  transform: translate(-100%, -50%);
+  cursor: ew-resize;
 }
 </style>
