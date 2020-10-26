@@ -2,7 +2,7 @@
  * @Author: Noah_hd
  * @Date: 2020-10-26 15:58:18
  * @LastEditors: Noah_hd
- * @LastEditTime: 2020-10-26 17:39:14
+ * @LastEditTime: 2020-10-26 18:19:37
  * @Description: 
 -->
 <!--  -->
@@ -10,11 +10,11 @@
   <div class='appBox'>
 
     <h2>这是分屏页面</h2>
-
     <splitScreen
       :splitType="'yAxis'"
       :firstBoxSize="firstBoxSize"
       :secondBoxSize="secondBoxSize"
+      :bgcolor="bgcolor"
     >
       <template v-slot:top>
         toptoptoptoptoptoptop
@@ -41,7 +41,8 @@ export default {
   data () {
     return {
       firstBoxSize: { width: '80%', height: '20%' },
-      secondBoxSize: { width: '80%', height: '70%' }
+      secondBoxSize: { width: '80%', height: '70%' },
+      bgcolor: { first: 'rgb(49, 86, 126)', second: 'rgb(108, 149, 108)' }
     };
   },
   computed: {},

@@ -2,7 +2,7 @@
  * @Author: Noah_hd
  * @Date: 2020-10-21 15:11:15
  * @LastEditors: Noah_hd
- * @LastEditTime: 2020-10-26 17:46:09
+ * @LastEditTime: 2020-10-26 18:27:04
  * @Description: 
 
  使用注意：
@@ -13,25 +13,33 @@
   <div class="app">
     <div
       class="yaxisBox"
-      v-if="splitType==='yAxis'?true:false"
+      v-if="splitType==='yAxis'"
     >
       <div
         class="top"
-        :style="{width:firstBoxSize.width,height:firstBoxSize.height}"
+        :style="{
+        width:firstBoxSize.width,
+        height:firstBoxSize.height,
+        backgroundColor:bgcolor.first
+        }"
       >this is top box
         <slot name="top"></slot>
         <div class="controlBtn"></div>
       </div>
       <div
         class="footer"
-        :style="{width:secondBoxSize.width,height:secondBoxSize.height}"
+        :style="{
+        width:secondBoxSize.width,
+        height:secondBoxSize.height,
+         backgroundColor:bgcolor.second
+        }"
       >this is footer box
         <slot name="footer"></slot>
       </div>
     </div>
     <div
       class="XaxisBox"
-      v-if="splitType==='xAxis'?true:false"
+      v-if="splitType==='xAxis'"
     >
       <div class="leftBox">
         <slot name="left"></slot>
@@ -68,16 +76,28 @@ export default {
         return "xAxis"
       }
     },
+    /**
+     * @des ：第一象限的盒子宽高（top、left）
+     */
     firstBoxSize: {
       type: Object,
       default () {
         return { width: '50%', height: '50%' }
       }
     },
+    /**
+    * @des ：第二象限的盒子宽高（right、bottom）
+    */
     secondBoxSize: {
       type: Object,
       default () {
         return { width: '50%', height: '50%' }
+      }
+    },
+    bgcolor: {
+      type: Object,
+      default () {
+        return { first: '#fff', second: '#ccc' }
       }
     }
   },
@@ -103,6 +123,12 @@ export default {
         this.topBoxHeight = document.getElementsByClassName('top')[0].offsetHeight
         this.bottomBoxHeight = document.getElementsByClassName('footer')[0].offsetHeight
         const controlBtn = document.getElementsByClassName('controlBtn')[0]
+         controlBtn.onmouseover = () => {
+          controlBtn.style.backgroundColor = "#646464"
+        }
+        controlBtn.onmouseleave = () => {
+          controlBtn.style.backgroundColor = "#ccc"
+        }
         controlBtn.onmousedown = (e) => {
           var disX = e.clientX - controlBtn.offsetLeft //clientX,Y鼠标相对于浏览器窗口可视区域的X，Y坐标（窗口坐标）
           var disY = e.clientY - controlBtn.offsetTop
@@ -131,6 +157,12 @@ export default {
         this.leftBoxWidth = document.getElementsByClassName('leftBox')[0].offsetWidth
         this.rightBoxWidth = document.getElementsByClassName('rightBox')[0].offsetWidth
         const xAxisControl = document.getElementsByClassName('xAxisControl')[0]
+        xAxisControl.onmouseover = () => {
+          xAxisControl.style.backgroundColor = "#646464"
+        }
+        xAxisControl.onmouseleave = () => {
+          xAxisControl.style.backgroundColor = "#ccc"
+        }
         xAxisControl.onmousedown = (e) => {
           var disX = e.clientX - xAxisControl.offsetLeft //clientX,Y鼠标相对于浏览器窗口可视区域的X，Y坐标（窗口坐标）
           var disY = e.clientY - xAxisControl.offsetTop
@@ -165,35 +197,31 @@ export default {
   padding: 0;
   width: 100%;
   height: 100%;
-  background: #ccc;
+  background: #fff;
 }
 .top {
   background-color: rgb(108, 149, 108);
   border-bottom: 1px solid #ccc;
   position: relative;
   box-sizing: border-box;
+  margin-bottom: 12px;
 }
 .footer {
   background-color: rgb(49, 86, 126);
   /* background-color: rgb(59, 59, 131); */
 }
-.controlBox {
-  width: 100%;
-  height: 30px;
-  background-color: transparent;
-  position: absolute;
-  bottom: 0;
-}
+/*  */
 .controlBtn {
   background-color: #ccc;
-  width: 30px;
-  height: 20px;
+  width: 50px;
+  height: 8px;
   position: absolute;
   top: 100%;
   left: 50%;
   z-index: 99;
+  border-radius: 10px;
   /* transform: translateX(-50%); */
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, 2px);
   cursor: ns-resize;
 }
 .yaxisBox {
@@ -210,19 +238,21 @@ export default {
 .leftBox {
   background-color: burlywood;
   position: relative;
+  margin-right: 10px;
 }
 .rightBox {
   background-color: rgb(192, 146, 146);
 }
 .xAxisControl {
   background-color: #ccc;
-  width: 30px;
-  height: 20px;
+  width: 8px;
+  height: 50px;
   position: absolute;
   z-index: 99;
   top: 50%;
   left: 100%;
-  transform: translate(-100%, -50%);
+  border-radius: 8px;
+  transform: translate(1px, -50%);
   cursor: ew-resize;
 }
 </style>
