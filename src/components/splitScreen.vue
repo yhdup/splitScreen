@@ -2,11 +2,11 @@
  * @Author: Noah_hd
  * @Date: 2020-10-21 15:11:15
  * @LastEditors: Noah_hd
- * @LastEditTime: 2020-10-26 18:27:04
+ * @LastEditTime: 2020-10-27 09:51:32
  * @Description: 
 
  使用注意：
- 1、在引用此组件时，包裹此组件的dom需要有高度
+ 1、在引用此组件时，包裹此组件的dom需要有宽高
  2、总共有四个插槽可用，根据分屏方式两两配对，分别是 top footer 组合和left right组合
 -->
 <template>
@@ -38,7 +38,7 @@
       </div>
     </div>
     <div
-      class="XaxisBox"
+      class="xAxisDrag"
       v-if="splitType==='xAxis'"
     >
       <div class="leftBox">
@@ -94,6 +94,9 @@ export default {
         return { width: '50%', height: '50%' }
       }
     },
+    /**
+     * @des :背景颜色，分别为两个盒子的背景颜色
+     */
     bgcolor: {
       type: Object,
       default () {
@@ -115,10 +118,13 @@ export default {
       if (this.splitType === 'xAxis') {
         this.xAxisDrag()
       } else if (this.splitType === 'yAxis') {
-        this.btnDrag()
+        this.yAxisDrag()
       }
     },
-    btnDrag (e) {
+  /**
+   * @des : 垂直方向拖拽
+   */
+    yAxisDrag (e) {
       this.$nextTick(() => {
         this.topBoxHeight = document.getElementsByClassName('top')[0].offsetHeight
         this.bottomBoxHeight = document.getElementsByClassName('footer')[0].offsetHeight
@@ -152,6 +158,9 @@ export default {
         }
       })
     },
+    /**
+   * @des : 水平方向拖拽
+   */
     xAxisDrag (e) {
       this.$nextTick(() => {
         this.leftBoxWidth = document.getElementsByClassName('leftBox')[0].offsetWidth
@@ -173,7 +182,6 @@ export default {
               l = 0;
             } else if (l > this.leftBoxWidth + this.rightBoxWidth) {
               l = this.leftBoxWidth + this.rightBoxWidth;
-              // console.log(1111111)
             }
             xAxisControl.style.left = l + 'px'
             document.getElementsByClassName('leftBox')[0].style.width = l + 'px'
@@ -229,7 +237,7 @@ export default {
   width: 100%;
   height: 100%;
 }
-.XaxisBox {
+.xAxisDrag {
   width: 100%;
   height: 100%;
   display: flex;

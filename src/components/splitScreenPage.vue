@@ -2,7 +2,7 @@
  * @Author: Noah_hd
  * @Date: 2020-10-26 15:58:18
  * @LastEditors: Noah_hd
- * @LastEditTime: 2020-10-26 18:19:37
+ * @LastEditTime: 2020-10-27 09:51:59
  * @Description: 
 -->
 <!--  -->
@@ -11,7 +11,7 @@
 
     <h2>这是分屏页面</h2>
     <splitScreen
-      :splitType="'yAxis'"
+      :splitType="'xAxis'"
       :firstBoxSize="firstBoxSize"
       :secondBoxSize="secondBoxSize"
       :bgcolor="bgcolor"
