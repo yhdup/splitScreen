@@ -2,13 +2,12 @@
  * @Author: Noah_hd
  * @Date: 2020-10-26 15:58:18
  * @LastEditors: Noah_hd
- * @LastEditTime: 2020-10-27 09:51:59
+ * @LastEditTime: 2020-10-27 10:50:34
  * @Description: 
 -->
 <!--  -->
 <template>
   <div class='appBox'>
-
     <h2>这是分屏页面</h2>
     <splitScreen
       :splitType="'xAxis'"

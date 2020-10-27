@@ -2,7 +2,7 @@
  * @Author: Noah_hd
  * @Date: 2020-10-21 15:11:15
  * @LastEditors: Noah_hd
- * @LastEditTime: 2020-10-27 09:51:32
+ * @LastEditTime: 2020-10-27 10:43:36
  * @Description: 
 
  使用注意：
@@ -59,10 +59,9 @@ export default {
   name: 'HelloWorld',
   data () {
     return {
-      topBoxHeight: 0,
-      bottomBoxHeight: 0,
-      leftBoxWidth: 0,
-      rightBoxWidth: 0
+      dragSwitch: '',//拖拽控制器
+      firstQuadrantSize: 0,//第一象限盒子的宽度或者高度
+      secondQuadrantSize: 0,//第二象限盒子的宽度或者高度
 
     }
   },
@@ -107,92 +106,72 @@ export default {
   watch: {
   },
   mounted () {
-    this.checkSplitType()
+    this.dragControl()
     console.log(this.firstBoxSize, this.secondBoxSize, "++++")
   },
   methods: {
     /**
-     * @des :根据splitType判断是左右还是上下平移
+     * @des ：拖拽事件
+     * 
      */
-    checkSplitType () {
-      if (this.splitType === 'xAxis') {
-        this.xAxisDrag()
-      } else if (this.splitType === 'yAxis') {
-        this.yAxisDrag()
-      }
-    },
-  /**
-   * @des : 垂直方向拖拽
-   */
-    yAxisDrag (e) {
+    dragControl (e) {
       this.$nextTick(() => {
-        this.topBoxHeight = document.getElementsByClassName('top')[0].offsetHeight
-        this.bottomBoxHeight = document.getElementsByClassName('footer')[0].offsetHeight
-        const controlBtn = document.getElementsByClassName('controlBtn')[0]
-         controlBtn.onmouseover = () => {
-          controlBtn.style.backgroundColor = "#646464"
+        console.log(this.splitType, "******")
+        //根据拖拽类型，来给第一象限和第二象限的盒子size赋值和给控制器赋值
+        switch (this.splitType) {
+          case 'xAxis':
+            this.firstQuadrantSize = document.getElementsByClassName('leftBox')[0].offsetWidth
+            this.secondQuadrantSize = document.getElementsByClassName('rightBox')[0].offsetWidth
+            this.dragSwitch = document.getElementsByClassName('xAxisControl')[0]
+            break
+          case 'yAxis':
+            this.firstQuadrantSize = document.getElementsByClassName('top')[0].offsetHeight
+            this.secondQuadrantSize = document.getElementsByClassName('footer')[0].offsetHeight
+            this.dragSwitch = document.getElementsByClassName('controlBtn')[0]
+            break
         }
-        controlBtn.onmouseleave = () => {
-          controlBtn.style.backgroundColor = "#ccc"
+        // 控制器移入移出效果
+        this.dragSwitch.onmouseover = () => {
+          this.dragSwitch.style.backgroundColor = "#646464"
         }
-        controlBtn.onmousedown = (e) => {
-          var disX = e.clientX - controlBtn.offsetLeft //clientX,Y鼠标相对于浏览器窗口可视区域的X，Y坐标（窗口坐标）
-          var disY = e.clientY - controlBtn.offsetTop
+        this.dragSwitch.onmouseleave = () => {
+          this.dragSwitch.style.backgroundColor = "#ccc"
+        }
+        //控制器鼠标事件模拟drag
+        this.dragSwitch.onmousedown = (e) => {
+          var disX = e.clientX - this.dragSwitch.offsetLeft //clientX,Y鼠标相对于浏览器窗口可视区域的X，Y坐标（窗口坐标）
+          var disY = e.clientY - this.dragSwitch.offsetTop
           document.onmousemove = (e) => {
             var l = e.clientX - disX
             var t = e.clientY - disY
-            if (t < 0) {
-              t = 0;
-            } else if (t > this.topBoxHeight + this.bottomBoxHeight) {
-              t = this.topBoxHeight + this.bottomBoxHeight;
+
+            //根据 拖拽类型来分别处理x轴和y轴拖拽  主要是区分给宽度或高度
+            if (this.splitType === 'xAxis') {
+              if (l < 0) {
+                l = 0;
+              } else if (l > this.firstQuadrantSize + this.secondQuadrantSize) {
+                l = this.firstQuadrantSize + this.secondQuadrantSize;
+              }
+              document.getElementsByClassName('leftBox')[0].style.width = l + 'px'
+              document.getElementsByClassName('rightBox')[0].style.width = this.secondQuadrantSize + this.firstQuadrantSize - l + 'px'
+            } else if (this.splitType === 'yAxis') {
+              if (t < 0) {
+                t = 0;
+              } else if (t > this.firstQuadrantSize + this.secondQuadrantSize) {
+                t = this.firstQuadrantSize + this.secondQuadrantSize;
+              }
+              document.getElementsByClassName('top')[0].style.height = t + 'px'
+              document.getElementsByClassName('footer')[0].style.height = this.secondQuadrantSize + this.firstQuadrantSize - t + 'px'
             }
-            controlBtn.style.top = t + 'px'
-            document.getElementsByClassName('top')[0].style.height = t + 'px'
-            document.getElementsByClassName('footer')[0].style.height = this.bottomBoxHeight + this.topBoxHeight - t + 'px'
           }
+          // 鼠标抬起
           document.onmouseup = function () {
             document.onmousemove = null;
             document.onmouseup = null
           }
           return false
         }
-      })
-    },
-    /**
-   * @des : 水平方向拖拽
-   */
-    xAxisDrag (e) {
-      this.$nextTick(() => {
-        this.leftBoxWidth = document.getElementsByClassName('leftBox')[0].offsetWidth
-        this.rightBoxWidth = document.getElementsByClassName('rightBox')[0].offsetWidth
-        const xAxisControl = document.getElementsByClassName('xAxisControl')[0]
-        xAxisControl.onmouseover = () => {
-          xAxisControl.style.backgroundColor = "#646464"
-        }
-        xAxisControl.onmouseleave = () => {
-          xAxisControl.style.backgroundColor = "#ccc"
-        }
-        xAxisControl.onmousedown = (e) => {
-          var disX = e.clientX - xAxisControl.offsetLeft //clientX,Y鼠标相对于浏览器窗口可视区域的X，Y坐标（窗口坐标）
-          var disY = e.clientY - xAxisControl.offsetTop
-          document.onmousemove = (e) => {
-            var l = e.clientX - disX
-            var t = e.clientY - disY
-            if (l < 0) {
-              l = 0;
-            } else if (l > this.leftBoxWidth + this.rightBoxWidth) {
-              l = this.leftBoxWidth + this.rightBoxWidth;
-            }
-            xAxisControl.style.left = l + 'px'
-            document.getElementsByClassName('leftBox')[0].style.width = l + 'px'
-            document.getElementsByClassName('rightBox')[0].style.width = this.rightBoxWidth + this.leftBoxWidth - l + 'px'
-          }
-          document.onmouseup = function () {
-            document.onmousemove = null;
-            document.onmouseup = null
-          }
-          return false
-        }
+
       })
     }
   }
