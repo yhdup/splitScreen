@@ -1,14 +1,14 @@
 <!--
  * @Author: Noah_hd
  * @Date: 2020-10-26 15:58:18
- * @LastEditors: Noah_hd
- * @LastEditTime: 2020-10-27 10:50:34
+ * @LastEditors: name
+ * @LastEditTime: 2022-04-17 17:51:52
  * @Description: 
 -->
 <!--  -->
 <template>
   <div class='appBox'>
-    <h2>这是分屏页面</h2>
+    <h2>这是分屏页面111</h2>
     <splitScreen
       :splitType="'xAxis'"
       :firstBoxSize="firstBoxSize"
